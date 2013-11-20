@@ -1,0 +1,3 @@
+Titanium ImageManager for Chrome
+================================
+
