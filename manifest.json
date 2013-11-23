@@ -7,8 +7,19 @@
 
   "permissions": [
 	"tabs",
-    "http://4chan.org/*"
+	"http://*/*",
+	"https://*/*"
   ],
+  
+  "content_scripts": [
+    {
+      "matches": ["http://*/*", "https://*/*"],
+      "js": ["js/jquery-1.10.2.min.js", "js/content_script.js"],
+	  "css": ["css/onpage.css"]
+    }
+  ],
+  "web_accessible_resources": ["js/jquery-1.10.2.min.js", "js/content_script.js","js/jquery-1.10.2.min.map"],
+
   "browser_action": {
   
     "default_popup": "popup.htm"
