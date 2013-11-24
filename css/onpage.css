@@ -1,11 +1,37 @@
 .titanium-highlight {
-	content: '';
 	position: absolute;
 	width: 100%;
 	height: 100%;
-	padding: 3px;
+	padding: 10px;
 	top: -3px;
 	left: -3px;
 	border: 3px solid #2E7EFF;
 	border-radius: 3px;
+	pointer-events: none;
+	-webkit-transition: 0.15s;
+	overflow: visible;
+	cursor: crosshair;
+}
+
+.titanium-highlight b {
+	color: white;
+}
+
+.titanium-highlight .titanium-highlight-data {
+	content: '';
+	position: absolute;
+	color: white;
+	display: inline-block;
+	background: #2E7EFF;
+	padding: 3px 8px;
+	margin-top: -6px;
+	left: -3px;
+	top: -2em;
+	height: 2em;
+	text-shadow: 0px 1px 0px rgba(0,0,0,0.5);	
+	border-radius: 3px;
+	font-size: 10px;
+	border-radius: 3px;
+	vertical-align:top;
+	 white-space: nowrap;
 }
