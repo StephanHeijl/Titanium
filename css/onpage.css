@@ -11,6 +11,7 @@
 	-webkit-transition: 0.15s;
 	overflow: visible;
 	cursor: crosshair;
+	z-index: 9999999;
 }
 
 .titanium-highlight b {

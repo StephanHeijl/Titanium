@@ -1,19 +1,19 @@
-$(function () {
-	chrome.runtime.onMessage.addListener(
-		function (request, sender, sendResponse) {
-		console.log(request);
-		if (request.highlight == 1) {
-			var highlighter = $("<div>");
-			var highlighterData = $("<span>");
+jQuery(document).ready(function ($) {
+	function addHighlighterToBody(event) {
+		var highlighter = $("<div>");
+		var highlighterData = $("<span>");
 
-			highlighter.addClass("titanium-highlight");
-			highlighterData.addClass("titanium-highlight-data");
+		highlighter.addClass("titanium-highlight");
+		highlighterData.addClass("titanium-highlight-data");
 
-			highlighter.append(highlighterData);
+		highlighter.append(highlighterData);
 
-			$("body").append(highlighter);
+		$("body").append(highlighter);
+		return highlighter
+	}
 
-			console.log("Highlighting element");
+	function setMoveHightlighterOnClick(highlighter) {
+		highlighterData = highlighter.children("span")
 			$("body").on("mouseover", null, function (event) {
 				var t = $(event.target);
 				var offset = t.offset();
@@ -51,86 +51,109 @@ $(function () {
 				}
 
 			});
+	}
 
-			$("body").on("click", null, function (event) {
-				event.preventDefault();
+	function isUrlImage(url) {
+		var extensions = [".jpg", ".png", ".gif", ".jpeg", ".tif", ".bmp", ".raw"];
+		var foundExt = false;
 
-				var t = $(event.target);
-				var imgUrl = "";
-
-				if (t.prop("tagName") == "IMG") {
-					// We'll look for a parent anchor on top of the img,
-					// as these will often be links to larger versions of the image
-
-					pu = t.parentsUntil("a");
-					anchor = pu.eq(pu.length - 1).parent();
-					console.log(pu);
-					console.log(anchor);
-
-					if (anchor.prop("tagName") != "A") {
-
-						// We don't want to save the link if it's not an image, so we check whether it contains
-						// one of these common image extensions
-						var href = anchor.attr("href");
-						var extensions = [".jpg", ".png", ".gif", ".jpeg", ".tif", ".bmp", ".raw"];
-						var foundExt = false;
-
-						for (e in extensions) {
-							ext = extensions[e];
-							if (href.indexOf(ext) > 0) {
-								imgUrl = href;
-								foundExt = true;
-								break;
-							}
-						}
-						if (!foundExt) {
-							imgUrl = t.attr("src");
-						}
-					} else {
-						imgUrl = t.attr("src");
-					}
-				} else if (t.prop("tagName") == "A") {
-					// Same logic as before, except we'll stop if we can't find anything we can use.
-					var href = t.attr("href");
-					var extensions = [".jpg", ".png", ".gif", ".jpeg", ".tif", ".bmp", ".raw"];
-					var foundExt = false;
-
-					for (e in extensions) {
-						ext = extensions[e];
-						if (href.indexOf(ext) > 0) {
-							imgUrl = href;
-							foundExt = true;
-							break;
-						}
-					}
-					if (!foundExt) {
-						// We can get the element background, if there is one...
-						var bgImg = t.css('background-image');
-						console.log(bgImg);
-						bgImg = bgImg.replace('url(', '').replace(')', '');
-						imgUrl = bgImg;
-					}
-				} else {
-					// We can get the element background, if there is one...
-					var bgImg = t.css('background-image');
-					console.log(bgImg);
-					bgImg = bgImg.replace('url(', '').replace(')', '');
-					
-					imgUrl = bgImg;
-				}
-
-				console.log(imgUrl)
-				if (imgUrl.length > 0 && imgUrl != "none") {
-					sendResponse({
-						"imgUrl" : imgUrl
-					});
-				} else {
-					alert("Could not retreive an image from this element.");
-				}
-
-				//$(".titanium-highlight").remove()
-				$("body").off("mouseover click", null);
-			});
+		for (e in extensions) {
+			ext = extensions[e];
+			if (url.indexOf(ext) > 0) {
+				foundExt = true;
+				break;
+			}
 		}
-	});
+		return foundExt
+	}
+
+	function checkImgElement(t) {
+		// We'll look for a parent anchor on top of the img,
+		// as these will often be links to larger versions of the image
+
+		pu = t.parentsUntil("a");
+		if (pu.length > 0) {
+			anchor = pu.eq(pu.length - 1).parent();
+		} else {
+			anchor = t.parent();
+		}
+
+		if (anchor.prop("tagName") == "A") {
+			return checkAnchorElement(anchor);
+		} else {
+			return t.attr("src");
+		}
+	}
+
+	function checkAnchorElement(t) {
+		// Check if the URL is an actual image.
+		var href = t.attr("href");
+		if (isUrlImage(href)) {
+			return href;
+		} else {
+			return checkOtherElement(t);
+		}
+	}
+
+	function checkOtherElement(t) {
+		var img = t.find("img");
+		if (img.length > 0) {
+			return img.attr("src");
+		} else {
+			return getBackgroundImage(t);
+		}
+	}
+
+	function getBackgroundImage(t) {
+		var bgImg = t.css('background-image');
+		bgImg = bgImg.replace('url(', '').replace(')', '');
+		return bgImg;
+	}
+
+	function setHandleElementOnClick(sendResponse) {
+		$("body").on("click", null, function (event) {
+			event.preventDefault();
+
+			var t = $(event.target);
+			var imgUrl = "";
+
+			if (t.prop("tagName") == "IMG") {
+				imgUrl = checkImgElement(t);
+			} else if (t.prop("tagName") == "A") {
+				imgUrl = checkAnchorElement(t);
+			} else {
+				imgUrl = checkOtherElement(t);
+			}
+
+			if (imgUrl.length > 0 && imgUrl != "none") {
+				console.log("Found: " + imgUrl)
+				sendResponse({
+					"imgUrl" : imgUrl
+				});
+			} else {
+				alert("Could not retreive an image from this element.");
+			}
+
+			$(".titanium-highlight").remove()
+			$("body").off("mouseover click", null);
+		});
+	}
+
+	function waitForMessages() {
+		chrome.runtime.onMessage.addListener(
+			function (request, sender, sendResponse) {
+			console.log(request);
+			if (request.highlight == 1) {
+			
+				console.log("Highlighting element");
+				highlighter = addHighlighterToBody();
+				setMoveHightlighterOnClick(highlighter);
+				setHandleElementOnClick(sendResponse);
+
+			}
+		});
+	}
+
+	waitForMessages()
+
 });
