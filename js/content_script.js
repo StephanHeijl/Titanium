@@ -131,7 +131,7 @@ jQuery(document).ready(function ($) {
 					"imgUrl" : imgUrl
 				});
 			} else {
-				alert("Could not retreive an image from this element.");
+				alert("Could not retrieve an image from this element.");
 			}
 
 			$(".titanium-highlight").remove()
@@ -142,15 +142,15 @@ jQuery(document).ready(function ($) {
 	function waitForMessages() {
 		chrome.runtime.onMessage.addListener(
 			function (request, sender, sendResponse) {
-			console.log(request);
-			if (request.highlight == 1) {
-			
-				console.log("Highlighting element");
-				highlighter = addHighlighterToBody();
-				setMoveHightlighterOnClick(highlighter);
-				setHandleElementOnClick(sendResponse);
+				console.log(request);
+				if (request.highlight == 1) {
 
-			}
+					console.log("Highlighting element");
+					highlighter = addHighlighterToBody();
+					setMoveHightlighterOnClick(highlighter);
+					setHandleElementOnClick(sendResponse);
+
+				}
 		});
 	}
 
