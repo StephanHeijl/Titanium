@@ -127,33 +127,65 @@ jQuery(document).ready(function ($) {
 
 			if (imgUrl.length > 0 && imgUrl != "none") {
 				console.log("Found: " + imgUrl)
-				sendResponse({
+				chrome.runtime.sendMessage({
 					"imgUrl" : imgUrl
 				});
 			} else {
 				alert("Could not retrieve an image from this element.");
 			}
 
-			$(".titanium-highlight").remove()
 			$("body").off("mouseover click", null);
+		});
+	}
+
+	function doFlashSaveEffect(element, callback) {
+		var flash = $("<div>")
+			.attr('class', 'background')
+			.css({
+				backgroundColor : 'white',
+				position : 'absolute',
+				top : 0,
+				left : 0,
+				zIndex : 999,
+				width : element.width(),
+				height : element.height(),
+				padding: '10px'
+			});
+
+		element.append(flash);
+		element.addClass("notransition").height();
+		element.animate({"padding":"0px","marginTop":"-3px", "marginLeft":"-3px"}, 50);
+		flash.animate({"padding":"0px"}, 50);
+		flash.animate({
+			"opacity" : "0"
+		}, 1200, function () {
+			console.log(element.css("backgroundColor"));
+			callback();
 		});
 	}
 
 	function waitForMessages() {
 		chrome.runtime.onMessage.addListener(
 			function (request, sender, sendResponse) {
-				console.log(request);
-				if (request.highlight == 1) {
+			console.log(request);
+			if ("highlight" in request && request.highlight == 1) {
 
-					console.log("Highlighting element");
-					highlighter = addHighlighterToBody();
-					setMoveHightlighterOnClick(highlighter);
-					setHandleElementOnClick(sendResponse);
+				console.log("Highlighting element");
+				highlighter = addHighlighterToBody();
+				setMoveHightlighterOnClick(highlighter);
+				setHandleElementOnClick(sendResponse);
 
-				}
+			} else if ("flash" in request && request.flash == 1) {
+				doFlashSaveEffect(highlighter, function () {
+					highlighter.remove();
+				});
+			} else if ("flash" in request && request.flash == 0) {
+				highlighter.remove();
+			}
 		});
 	}
 
+	console.log("Started")
 	waitForMessages()
 
 });
