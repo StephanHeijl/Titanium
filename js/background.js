@@ -34,4 +34,6 @@ function startHighlight() {
 	});
 }
 
-function saveImage(url) {}
+function saveImage(url) {
+	
+}
