@@ -110,7 +110,15 @@ jQuery(document).ready(function ($) {
 		return bgImg;
 	}
 
-	function setHandleElementOnClick(sendResponse) {
+	function setHandleElementOnClick(highlighter) {
+		// Rightclick
+		$("body").on("contextmenu", null, function (event) {
+			event.preventDefault();
+			$("body").off("mouseover click contextmenu", null);
+			highlighter.remove();
+		});
+		
+		// Leftclick
 		$("body").on("click", null, function (event) {
 			event.preventDefault();
 
@@ -131,10 +139,11 @@ jQuery(document).ready(function ($) {
 					"imgUrl" : imgUrl
 				});
 			} else {
-				alert("Could not retrieve an image from this element.");
+				highlighter.animate({"opacity":"0", "marginTop":"10px"},1000);
 			}
 
-			$("body").off("mouseover click", null);
+			$("body").off("mouseover click contextmenu", null);
+
 		});
 	}
 
@@ -149,13 +158,19 @@ jQuery(document).ready(function ($) {
 				zIndex : 999,
 				width : element.width(),
 				height : element.height(),
-				padding: '10px'
+				padding : '10px'
 			});
 
 		element.append(flash);
 		element.addClass("notransition").height();
-		element.animate({"padding":"0px","marginTop":"-3px", "marginLeft":"-3px"}, 50);
-		flash.animate({"padding":"0px"}, 50);
+		element.animate({
+			"padding" : "0px",
+			"marginTop" : "-3px",
+			"marginLeft" : "-3px"
+		}, 50);
+		flash.animate({
+			"padding" : "0px"
+		}, 50);
 		flash.animate({
 			"opacity" : "0"
 		}, 1200, function () {
@@ -173,14 +188,12 @@ jQuery(document).ready(function ($) {
 				console.log("Highlighting element");
 				highlighter = addHighlighterToBody();
 				setMoveHightlighterOnClick(highlighter);
-				setHandleElementOnClick(sendResponse);
+				setHandleElementOnClick(highlighter);
 
 			} else if ("flash" in request && request.flash == 1) {
 				doFlashSaveEffect(highlighter, function () {
 					highlighter.remove();
 				});
-			} else if ("flash" in request && request.flash == 0) {
-				highlighter.remove();
 			}
 		});
 	}
