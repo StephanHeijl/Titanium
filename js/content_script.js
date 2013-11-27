@@ -140,6 +140,9 @@ jQuery(document).ready(function ($) {
 				});
 			} else {
 				highlighter.animate({"opacity":"0", "marginTop":"10px"},1000);
+				chrome.runtime.sendMessage({
+					"imgUrl" : ""
+				});
 			}
 
 			$("body").off("mouseover click contextmenu", null);
