@@ -12,11 +12,11 @@ Finished features
 -----------------
 * Adding an interactive highlighter to select images
 * Find images below elements and linked larger versions of the displayed image
+* Clicking on images to save them
+* Saving images locally
 
 Planned features
 ----------------
-* Clicking on images to save them
-* Saving images locally
 * Showing the images in your browser
 * Tagging the images when saving them
 * Searching for images by their tags
