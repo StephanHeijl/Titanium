@@ -51,9 +51,13 @@ function decode_utf8(s) {
 function saveImage(origin, url) {
 	var name = String(md5(url));
 	var urlSplit = url.split(".");
-
-	if (url.indexOf(origin) < 0) {
-		url = relativeToAbsolute(origin, url);
+	console.log("Got:", url);
+	if (url.indexOf("http") != 0) {
+		if(url.indexOf("//") == 0) {
+			url = "http:" + url;
+		} else {
+			url = relativeToAbsolute(origin, url);
+		}
 	}
 
 	url = url.replace("chrome-extension://", "http://")
