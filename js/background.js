@@ -63,6 +63,7 @@ function saveImage(origin, url) {
 	var toStore = {}
 	toStore[name] = {
 		"date" : new Date().getTime(),
+		"origin" : url
 	};
 
 	$.ajax({
@@ -78,15 +79,4 @@ function saveImage(origin, url) {
 
 		}
 	});
-}
-
-function loadGallery() {
-
-	chrome.storage.local.get(name, function (data) {
-		var img = "<img src='data:%s;base64,%s' alt='%s' />";
-		var img = sprintf(img, data[name]["type"], data[name]["imagedata"], name);
-		console.log("appending img");
-		console.log(img);
-	});
-
 }

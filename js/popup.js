@@ -6,6 +6,10 @@ $(function () {
 		});
 		
 	});
+	
+	$("#show-gallery").click(function() {
+		chrome.tabs.create({"url":"gallery.htm"});
+	});
 });
 
 function saveImage( url ) {
