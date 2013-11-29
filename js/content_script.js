@@ -117,10 +117,12 @@ jQuery(document).ready(function ($) {
 			$("body").off("mouseover click contextmenu", null);
 			highlighter.remove();
 		});
-		
+
 		// Leftclick
 		$("body").on("click", null, function (event) {
 			event.preventDefault();
+
+			var shiftWasHeld = event.shiftKey;
 
 			var t = $(event.target);
 			var imgUrl = "";
@@ -136,12 +138,17 @@ jQuery(document).ready(function ($) {
 			if (imgUrl.length > 0 && imgUrl != "none") {
 				console.log("Found: " + imgUrl)
 				chrome.runtime.sendMessage({
-					"imgUrl" : imgUrl
+					"imgUrl" : imgUrl,
+					"repeatMode" : shiftWasHeld
 				});
 			} else {
-				highlighter.animate({"opacity":"0", "marginTop":"10px"},1000);
+				highlighter.animate({
+					"opacity" : "0",
+					"marginTop" : "10px"
+				}, 1000);
 				chrome.runtime.sendMessage({
-					"imgUrl" : ""
+					"imgUrl" : "",
+					"repeatMode" : shiftWasHeld
 				});
 			}
 
@@ -177,25 +184,25 @@ jQuery(document).ready(function ($) {
 		flash.animate({
 			"opacity" : "0"
 		}, 1200, function () {
-			console.log(element.css("backgroundColor"));
 			callback();
 		});
 	}
 
 	function waitForMessages() {
+		highlighters = [];
 		chrome.runtime.onMessage.addListener(
 			function (request, sender, sendResponse) {
 			console.log(request);
 			if ("highlight" in request && request.highlight == 1) {
-
 				console.log("Highlighting element");
-				highlighter = addHighlighterToBody();
-				setMoveHightlighterOnClick(highlighter);
-				setHandleElementOnClick(highlighter);
+				highlighters.push(addHighlighterToBody());
+				setMoveHightlighterOnClick(highlighters[highlighters.length - 1]);
+				setHandleElementOnClick(highlighters[highlighters.length - 1]);
 
 			} else if ("flash" in request && request.flash == 1) {
-				doFlashSaveEffect(highlighter, function () {
-					highlighter.remove();
+				doFlashSaveEffect(highlighters[0], function () {
+					highlighters[0].remove()
+					highlighters.splice(0, 1);
 				});
 			}
 		});

@@ -14,8 +14,12 @@ function startListening() {
 					});
 				});
 			}
-
+			
 			chrome.runtime.onMessage.removeListener(arguments.callee);
+			console.log(request)
+			if(request.repeatMode) {
+				setTimeout( function() { console.log("Repeat!"); startHighlight() }, 600 );
+			}
 
 		}
 	});
@@ -53,7 +57,7 @@ function saveImage(origin, url) {
 	var urlSplit = url.split(".");
 	console.log("Got:", url);
 	if (url.indexOf("http") != 0) {
-		if(url.indexOf("//") == 0) {
+		if (url.indexOf("//") == 0) {
 			url = "http:" + url;
 		} else {
 			url = relativeToAbsolute(origin, url);
@@ -70,17 +74,18 @@ function saveImage(origin, url) {
 		"origin" : url
 	};
 
-	$.ajax({
-		type : "GET",
-		url : url,
-		data : "",
-		success : function (imageData, status, xhr) {
-			var ct = xhr.getResponseHeader("content-type") || "";
+	var img = new Image();
+	img.src = url;
 
-			toStore[name]["type"] = ct;
-			toStore[name]["imagedata"] = btoa(encode_utf8(imageData));
-			chrome.storage.local.set(toStore);
+	img.onload = function () {
+		var canvas = document.createElement("canvas");
+		canvas.height = img.height;
+		canvas.width = img.width;
+		var ctx = canvas.getContext("2d");
+		ctx.drawImage(img,0,0);
 
-		}
-	});
+		toStore[name]["imagedata"] = canvas.toDataURL();
+		chrome.storage.local.set(toStore);
+
+	}
 }
