@@ -14,10 +14,10 @@ Finished features
 * Find images below elements and linked larger versions of the displayed image
 * Clicking on images to save them
 * Saving images locally
+* Showing the images in your browser
 
 Planned features
 ----------------
-* Showing the images in your browser
 * Tagging the images when saving them
 * Searching for images by their tags
 * Sharing images with your friends
