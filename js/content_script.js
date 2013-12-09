@@ -195,7 +195,7 @@ jQuery(document).ready(function ($) {
 	}
 	
 	function countWords(text) {
-		commonWordsEN = ["the","be","and","of","a","in","to","have","to","it","I","that","for","you","he","with","on","do","say","this","they","at","but","we","his","from","that","not","can't",,"by","she","or","as","what","go","their","can","who","get","if","would","her","all","my","make","about","know","will","as","up","one","time","there","year","so","think","when","which","them","some","me","people","take","out","into","just","see","him","your","come","could","now","than","like","other","how","then","its","our","two","more","these","want","way","look","first","also","new","because","day","more","use","no","man","find","here","thing","give","many", "jpg", "png", "gif", "tif", "anonymous", "thread", "mon", "file", "utc", "are", "post","return", "replies", "images", "only", ""];
+		commonWordsEN = ["the","be","and","of","off","had","used","a","in","to","have","to","it","I","that","for","you","he","with","on","do","say","this","they","at","but","we","his","from","that","not","can't",,"by","she","or","as","what","go","their","can","who","get","if","would","her","all","my","make","about","know","will","as","up","one","time","there","year","so","think","when","which","them","some","me","people","take","out","into","just","see","him","your","come","could","now","than","like","other","how","then","its","our","two","more","these","want","way","look","first","also","new","because","day","more","use","no","man","find","here","thing","give","many", "jpg", "png", "gif", "tif", "anonymous", "thread", "mon", "file", "utc", "are", "post","return", "replies", "images", "only", "", "reply","page","change","posted","image","settings","password","owned","poster","falsehood","posting"];
 		commonWordsNL = ["de","van","in","het","een","en","is","op","zijn","met","hij","te","voor","werd","die","door","was","als","aan","dat","uit","ook","bij","tot","er","wordt","naar","deze","om","of","ze","niet","worden","maar","dit"];
 		
 		commonWords = commonWordsEN.concat(commonWordsNL);
@@ -222,7 +222,7 @@ jQuery(document).ready(function ($) {
 	
 	function getImageTags(t) {
 		var text = getAllTextOnPage().toLowerCase().replace(/\s{2,}/g, " ").replace(/[^a-z\s]/g,"");
-		var tags = countWords(text).slice(0,10);
+		var tags = countWords(text).slice(0,25);
 
 		var ntags = [];
 		for( tag in tags ) {
@@ -240,7 +240,7 @@ jQuery(document).ready(function ($) {
 	};
 	
 	function getAllTextOnPage() {
-		var tn = getTextNodesIn("body").slice(0,500);
+		var tn = getTextNodesIn("body").slice(0,750);
 		var text = []
 		for( n in tn) {
 			//console.log(tn[n]);

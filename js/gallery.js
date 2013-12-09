@@ -77,12 +77,14 @@ $(function () {
 
 	}
 
-	$("#img-container").on("contextmenu", ".isotope-item", function (event) {
+	$("#img-container").on("contextmenu", ".isotope-item:not(.selected)", function (event) {
 		event.preventDefault();
+		
+		$(this).addClass("selected")
 
-		var overlay = $("<div>").addClass(".overlay");
-		var removeButton = $("<div>").addClass(".remove");
-		var closeButton = $("<div>").addClass(".close");
+		var overlay = $("<div>").addClass("overlay");
+		var removeButton = $("<div>").addClass("remove").text("Remove");
+		var closeButton = $("<div>").addClass("close").text("Close");
 
 		overlay.append(removeButton).append(closeButton);
 
@@ -92,14 +94,22 @@ $(function () {
 
 		$(this).append(overlay)
 	});
-
-	$("#img-container").on("click", ".isotope-item", function (event) {
+	
+	$("#img-container").on("contextmenu", ".isotope-item.selected", function (event) {
 		event.preventDefault();
-		var offset = $(this).offset()
+		$(this).removeClass("selected")
+		$(this).children(".overlay").remove();
+	});
+
+	$("#img-container").on("click", ".isotope-item img", function (event) {
+		event.preventDefault();
+		var cont = $(this).parent();
+		
+		var offset = cont.offset()
 
 			$("body").css("overflow", "hidden");
 
-		var box = $(this).clone().addClass("box").css({
+		var box = cont.clone().addClass("box").css({
 				"top" : offset.height,
 				"line-height" : $(window).height() + "px",
 				"height" : $(window).height() + "px",
@@ -115,6 +125,13 @@ $(function () {
 				$("body").css("overflow", "auto");
 			});
 		});
+	});
+	
+	$("#img-container").on("click", ".isotope-item .remove", function (event) {
+		var cont = $(this).parents(".isotope-item");
+		chrome.storage.local.remove(cont.attr("name"));
+		cont.remove();
+		handler.isotope( 'reLayout' )
 	});
 	
 	//chrome.storage.local.get(function(data) { console.log(data); });
