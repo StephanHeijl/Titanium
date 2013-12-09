@@ -137,9 +137,14 @@ jQuery(document).ready(function ($) {
 
 			if (imgUrl.length > 0 && imgUrl != "none") {
 				console.log("Found: " + imgUrl)
+				
+				// Now, let's get us some tags
+				var tags = getImageTags(t);
+				
 				chrome.runtime.sendMessage({
 					"imgUrl" : imgUrl,
-					"repeatMode" : shiftWasHeld
+					"repeatMode" : shiftWasHeld,
+					"tags": tags
 				});
 			} else {
 				highlighter.animate({
@@ -148,7 +153,8 @@ jQuery(document).ready(function ($) {
 				}, 1000);
 				chrome.runtime.sendMessage({
 					"imgUrl" : "",
-					"repeatMode" : shiftWasHeld
+					"repeatMode" : shiftWasHeld,
+					"tags": ""
 				});
 			}
 
@@ -187,6 +193,67 @@ jQuery(document).ready(function ($) {
 			callback();
 		});
 	}
+	
+	function countWords(text) {
+		commonWordsEN = ["the","be","and","of","a","in","to","have","to","it","I","that","for","you","he","with","on","do","say","this","they","at","but","we","his","from","that","not","can't",,"by","she","or","as","what","go","their","can","who","get","if","would","her","all","my","make","about","know","will","as","up","one","time","there","year","so","think","when","which","them","some","me","people","take","out","into","just","see","him","your","come","could","now","than","like","other","how","then","its","our","two","more","these","want","way","look","first","also","new","because","day","more","use","no","man","find","here","thing","give","many", "jpg", "png", "gif", "tif", "anonymous", "thread", "mon", "file", "utc", "are", "post","return", "replies", "images", "only", ""];
+		commonWordsNL = ["de","van","in","het","een","en","is","op","zijn","met","hij","te","voor","werd","die","door","was","als","aan","dat","uit","ook","bij","tot","er","wordt","naar","deze","om","of","ze","niet","worden","maar","dit"];
+		
+		commonWords = commonWordsEN.concat(commonWordsNL);
+
+		words = text.split(" ");
+		wordcount = {}
+		for( w in words) {
+			if ( words[w] in wordcount ) {
+				wordcount[words[w]]++;
+			} else {
+				if (words[w].length > 2 && commonWords.indexOf(words[w] ) < 0) {
+					wordcount[words[w]] = 1;
+				}
+			}
+		}
+		
+		var sortable = [];
+		for (var word in wordcount)
+			  sortable.push([word, wordcount[word]])
+		sortable.sort(function(a, b) {return b[1] - a[1]})
+		
+		return sortable;
+	}
+	
+	function getImageTags(t) {
+		var text = getAllTextOnPage().toLowerCase().replace(/\s{2,}/g, " ").replace(/[^a-z\s]/g,"");
+		var tags = countWords(text).slice(0,10);
+
+		var ntags = [];
+		for( tag in tags ) {
+			ntags.push(tags[tag][0]);
+		}
+		
+		console.log(ntags);
+		return ntags;
+	}
+
+	function getTextNodesIn(el) {
+		return $(el).find("div, span, article, p, blockquote").addBack().contents().filter(function () {
+			return this.nodeType == 3;
+		});
+	};
+	
+	function getAllTextOnPage() {
+		var tn = getTextNodesIn("body").slice(0,500);
+		var text = []
+		for( n in tn) {
+			//console.log(tn[n]);
+			text.push(tn[n].nodeValue);
+		}
+		
+		return text.join(" ");
+	}
+	
+	function getCommonParentsDepth( a, b ) {
+		return a.parents().has(b).first().parents().length;
+	}
+	
 
 	function waitForMessages() {
 		highlighters = [];
@@ -198,6 +265,7 @@ jQuery(document).ready(function ($) {
 				highlighters.push(addHighlighterToBody());
 				setMoveHightlighterOnClick(highlighters[highlighters.length - 1]);
 				setHandleElementOnClick(highlighters[highlighters.length - 1]);
+				
 
 			} else if ("flash" in request && request.flash == 1) {
 				doFlashSaveEffect(highlighters[0], function () {

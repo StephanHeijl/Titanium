@@ -46,16 +46,53 @@ h1,h2 {
 	background: #eee;
 }
 
+#tag-search {
+	margin: 2%;
+	width: 95%;
+	border: 0;
+	border-bottom: 1px solid silver;
+	font-family: 'Roboto', sans-serif;
+	font-weight: 400;
+	outline:0;
+	font-size: 28pt;
+	padding: 0.5%;
+	color: #333;
+}
+
+.isotope.no-transition,
+.isotope.no-transition .isotope-item,
+.isotope .isotope-item.no-transition {
+  -webkit-transition-duration: 0s;
+     -moz-transition-duration: 0s;
+      -ms-transition-duration: 0s;
+       -o-transition-duration: 0s;
+          transition-duration: 0s;
+}
+
+.isotope-item {
+  z-index: 2;
+}
+
+.isotope-hidden.isotope-item {
+  pointer-events: none;
+  z-index: 1;
+}
+
 div.isotope-item {
-	width: 18%;
-	border: 10px solid #777;
-	margin: 0.25%;
+	width: 15%;
+	min-width: 256px;
+	border: 10px solid #eee;
+	border-radius: 5px;
+	box-shadow: 0px 5px 0px rgba(0,0,0,0.2);
+	margin: 5px 5px 8px 5px;
 	height: auto;
 	opacity: 0
+	background: #eee;
+	font-size: 0;
 }
 
 div.isotope-item:hover {
-	-webkit-box-shadow: 0 0 10px rgba(0,0,0,0.5);	
+	border-color: #e6e6e6;
 }
 
 div > img {

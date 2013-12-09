@@ -4,7 +4,7 @@ function startListening() {
 		if (sender.tab) {
 			if (request.imgUrl.length == 0) {}
 			else {
-				saveImage(sender.url, request.imgUrl);
+				saveImage(sender.url, request.imgUrl, request.tags);
 				chrome.tabs.query({
 					active : true,
 					currentWindow : true
@@ -14,11 +14,14 @@ function startListening() {
 					});
 				});
 			}
-			
+
 			chrome.runtime.onMessage.removeListener(arguments.callee);
 			console.log(request)
-			if(request.repeatMode) {
-				setTimeout( function() { console.log("Repeat!"); startHighlight() }, 600 );
+			if (request.repeatMode) {
+				setTimeout(function () {
+					console.log("Repeat!");
+					startHighlight()
+				}, 600);
 			}
 
 		}
@@ -52,7 +55,7 @@ function decode_utf8(s) {
 	return decodeURIComponent(escape(s));
 }
 
-function saveImage(origin, url) {
+function saveImage(origin, url, tags) {
 	var name = String(md5(url));
 	var urlSplit = url.split(".");
 	console.log("Got:", url);
@@ -71,7 +74,8 @@ function saveImage(origin, url) {
 	var toStore = {}
 	toStore[name] = {
 		"date" : new Date().getTime(),
-		"origin" : url
+		"origin" : url,
+		"tags" : tags
 	};
 
 	var img = new Image();
@@ -82,9 +86,27 @@ function saveImage(origin, url) {
 		canvas.height = img.height;
 		canvas.width = img.width;
 		var ctx = canvas.getContext("2d");
-		ctx.drawImage(img,0,0);
+		ctx.drawImage(img, 0, 0);
 
 		toStore[name]["imagedata"] = canvas.toDataURL();
+
+		chrome.storage.local.get("keys", function (result) {
+			console.log(result,name, typeof result);
+			if (typeof result == "undefined" || typeof result["keys"] == "undefined" || result["keys"].length == 0) {
+				var newKeys = {
+					"keys" : [name]
+				};
+			} else {
+				result["keys"].push(name);
+				var newKeys = {
+					"keys" : result["keys"]
+				};
+				console.log(newKeys);
+			}
+			console.log(newKeys);
+			chrome.storage.local.set(newKeys);
+		})
+		
 		chrome.storage.local.set(toStore);
 
 	}
