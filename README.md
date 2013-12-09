@@ -15,9 +15,9 @@ Finished features
 * Clicking on images to save them
 * Saving images locally
 * Showing the images in your browser
+* Tagging the images when saving them
+* Searching for images by their tags
 
 Planned features
 ----------------
-* Tagging the images when saving them
-* Searching for images by their tags
 * Sharing images with your friends
