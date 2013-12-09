@@ -4,9 +4,10 @@ $(function () {
 		console.log(start, n);
 		for( i=start; i < start+n && i < keys.length; i++) {
 				var name = keys[i];
+				console.log(name);
 				
 				chrome.storage.local.get(name, function(result) {
-					
+					console.log(name, result);
 					for( name in result ) {
 						data = result[name];
 						
@@ -21,6 +22,8 @@ $(function () {
 						linkContainer.append(img)
 
 						handler.isotope('insert', linkContainer);
+						
+						console.log(linkContainer);
 					}
 					
 				});

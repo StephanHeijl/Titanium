@@ -1,35 +1,43 @@
 {
-  "manifest_version": 2,
+	"manifest_version" : 2,
 
-  "name": "Titanium ImageManager",
-  "description": "Downloads and manages images from the internet on your own PC.",
-  "version": "0.1",
+	"name" : "Titanium ImageManager",
+	"description" : "Downloads and manages images from the internet on your own PC.",
+	"version" : "0.1",
 
-  "permissions": [
-	"tabs",
-	"storage",
-	"unlimitedStorage",
-	"http://*/*",
-	"https://*/*"
-  ],
-  
-  "background": {
-    "scripts": ["js/jquery-1.10.2.min.js", "js/md5.js", "js/sprintf.js", "js/background.js"],
-    "persistent": false
-  },
-  
-  "content_scripts": [
-    {
-      "matches": ["http://*/*", "https://*/*"],
-      "js": ["js/jquery-1.10.2.min.js", "js/content_script.js"],
-	  "css": ["css/onpage.css"]
-    }
-  ],
-  "web_accessible_resources": ["js/jquery-1.10.2.min.js", "js/content_script.js","js/jquery-1.10.2.min.map"],
+	"permissions" : [
+		"tabs",
+		"storage",
+		"unlimitedStorage",
+		"http://*/*",
+		"https://*/*"
+	],
 
-  "browser_action": {
-  
-    "default_popup": "popup.htm"
-  
-  }
+	"background" : {
+		"scripts" : ["js/jquery-1.10.2.min.js", "js/md5.js", "js/sprintf.js", "js/background.js"],
+		"persistent" : false
+	},
+
+	"content_scripts" : [{
+			"matches" : ["http://*/*", "https://*/*"],
+			"js" : ["js/jquery-1.10.2.min.js", "js/content_script.js"],
+			"css" : ["css/onpage.css"]
+		}
+	],
+	"web_accessible_resources" : ["js/jquery-1.10.2.min.js", "js/content_script.js", "js/jquery-1.10.2.min.map"],
+
+	"browser_action" : {
+
+		"default_popup" : "popup.htm"
+
+	},
+
+	"commands" : {
+		"start_highlight": {
+			"suggested_key" : {
+				"default" : "Ctrl+Shift+Z"
+			},
+			"description":"Start highlighting"
+		}
+	}
 }

@@ -28,6 +28,13 @@ function startListening() {
 	});
 }
 
+chrome.commands.onCommand.addListener(function (command) {
+	console.log('Command:', command);
+	if (command == "start_highlight") {
+		startHighlight()
+	}
+});
+
 function startHighlight() {
 	startListening();
 	chrome.tabs.query({
@@ -91,7 +98,7 @@ function saveImage(origin, url, tags) {
 		toStore[name]["imagedata"] = canvas.toDataURL();
 
 		chrome.storage.local.get("keys", function (result) {
-			console.log(result,name, typeof result);
+			console.log(result, name, typeof result);
 			if (typeof result == "undefined" || typeof result["keys"] == "undefined" || result["keys"].length == 0) {
 				var newKeys = {
 					"keys" : [name]
@@ -106,7 +113,7 @@ function saveImage(origin, url, tags) {
 			console.log(newKeys);
 			chrome.storage.local.set(newKeys);
 		})
-		
+
 		chrome.storage.local.set(toStore);
 
 	}
