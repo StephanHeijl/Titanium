@@ -12,7 +12,7 @@ jQuery(document).ready(function ($) {
 		return highlighter
 	}
 
-	function setMoveHightlighterOnClick(highlighter) {
+	function setMoveHighlighterOnClick(highlighter) {
 		highlighterData = highlighter.children("span")
 			$("body").on("mouseover", null, function (event) {
 				var t = $(event.target);
@@ -257,13 +257,16 @@ jQuery(document).ready(function ($) {
 
 	function waitForMessages() {
 		highlighters = [];
+		
+		console.log("Waiting for messages");
+		
 		chrome.runtime.onMessage.addListener(
 			function (request, sender, sendResponse) {
 			console.log(request);
 			if ("highlight" in request && request.highlight == 1) {
 				console.log("Highlighting element");
 				highlighters.push(addHighlighterToBody());
-				setMoveHightlighterOnClick(highlighters[highlighters.length - 1]);
+				setMoveHighlighterOnClick(highlighters[highlighters.length - 1]);
 				setHandleElementOnClick(highlighters[highlighters.length - 1]);
 				
 
@@ -276,7 +279,6 @@ jQuery(document).ready(function ($) {
 		});
 	}
 
-	console.log("Started")
 	waitForMessages()
 
 });

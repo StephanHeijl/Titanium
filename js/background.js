@@ -76,13 +76,12 @@ function saveImage(origin, url, tags) {
 
 	url = url.replace("chrome-extension://", "http://")
 
-		console.log(url, name);
+	console.log(url, name);
 
 	var toStore = {}
 	toStore[name] = {
 		"date" : new Date().getTime(),
-		"origin" : url,
-		"tags" : tags
+		"origin" : url
 	};
 
 	var img = new Image();
@@ -99,22 +98,45 @@ function saveImage(origin, url, tags) {
 
 		chrome.storage.local.get("keys", function (result) {
 			console.log(result, name, typeof result);
+			
 			if (typeof result == "undefined" || typeof result["keys"] == "undefined" || result["keys"].length == 0) {
+			
 				var newKeys = {
-					"keys" : [name]
+					"keys" : [name],
+					"tags" : {}
 				};
-			} else {
-				result["keys"].push(name);
-				var newKeys = {
-					"keys" : result["keys"]
-				};
+				newKeys["tags"][name] = tags;
 				console.log(newKeys);
-			}
-			console.log(newKeys);
-			chrome.storage.local.set(newKeys);
+				chrome.storage.local.set(newKeys);
+				
+				
+			} else {
+				if ( result["keys"].indexOf(name) > -1 ){
+					return true;
+				}
+				
+				console.log("Unique image :D")
+				result["keys"].push(name);
+								
+				chrome.storage.local.get("tags", function (tresult) {
+					console.log(tresult)
+					tresult["tags"][name] = tags;
+					console.log(tresult)
+					
+					var newKeys = {
+						"keys" : result["keys"],
+						"tags" : tresult["tags"]
+					};
+					
+					console.log(newKeys);
+					chrome.storage.local.set(newKeys);
+					
+				});
+								
+			}			
 		})
 
 		chrome.storage.local.set(toStore);
-
+		
 	}
 }
