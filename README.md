@@ -21,3 +21,5 @@ Finished features
 Planned features
 ----------------
 * Sharing images with your friends
+* Adding and removing tags from existing images
+* Better auto-tagging algorithm

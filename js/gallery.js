@@ -39,10 +39,12 @@ $(function () {
 		function loadImages() {
 			console.log("Loading the gallery");
 			
+			setupCenteredMasonry();
+			
 			handler = $('#img-container');
 			handler.isotope({
 				itemSelector : 'div',
-				layoutMode : 'masonry'
+				layoutMode : 'masonry',
 			});
 
 			chrome.storage.local.get("keys", function (keys) {
@@ -77,7 +79,6 @@ $(function () {
 			var s = 0;
 			var n = 20;
 			if ($(this).val().length > 2 ) {
-				console.log(tags)
 				
 				chrome.storage.local.get("tags", function (tresult) {
 					console.log(tresult["tags"]);
@@ -133,6 +134,69 @@ $(function () {
 
 	}
 	
+	function setupCenteredMasonry() {
+	
+	$.Isotope.prototype._getCenteredMasonryColumns = function() {
+		this.width = this.element.width();
+
+		var parentWidth = this.element.parent().width();
+
+		var colW = this.options.masonry && this.options.masonry.columnWidth || // i.e. options.masonry && options.masonry.columnWidth
+
+		this.$filteredAtoms.outerWidth(true) || // or use the size of the first item
+
+		parentWidth; // if there's no items, use size of container
+
+		var cols = Math.floor(parentWidth / colW);
+
+		cols = Math.max(cols, 1);
+
+		this.masonry.cols = cols; // i.e. this.masonry.cols = ....
+		this.masonry.columnWidth = colW; // i.e. this.masonry.columnWidth = ...
+	};
+
+	$.Isotope.prototype._masonryReset = function() {
+
+		this.masonry = {}; // layout-specific props
+		this._getCenteredMasonryColumns(); // FIXME shouldn't have to call this again
+
+		var i = this.masonry.cols;
+
+		this.masonry.colYs = [];
+			while (i--) {
+			this.masonry.colYs.push(0);
+		}
+	};
+
+	$.Isotope.prototype._masonryResizeChanged = function() {
+
+		var prevColCount = this.masonry.cols;
+
+		this._getCenteredMasonryColumns(); // get updated colCount
+		return (this.masonry.cols !== prevColCount);
+	};
+
+	$.Isotope.prototype._masonryGetContainerSize = function() {
+
+		var unusedCols = 0,
+
+		i = this.masonry.cols;
+			while (--i) { // count unused columns
+			if (this.masonry.colYs[i] !== 0) {
+				break;
+			}
+			unusedCols++;
+		}
+
+		return {
+			height: Math.max.apply(Math, this.masonry.colYs),
+			width: (this.masonry.cols - unusedCols) * this.masonry.columnWidth // fit container to columns that have been used;
+		};
+	};
+	
+	}
+	
+	
 	function getIntersect(arr1, arr2) {
 		var r = [], o = {}, l = arr2.length, i, v;
 		for (i = 0; i < l; i++) {
@@ -162,14 +226,10 @@ $(function () {
 
 		var overlay = $("<div>").addClass("overlay");
 		var removeButton = $("<div>").addClass("remove").text("Remove");
-		var closeButton = $("<div>").addClass("close").text("Close");
+		var shareButton = $("<div>").addClass("share").text("Share");
 
-		overlay.append(removeButton).append(closeButton);
-
-		closeButton.click(function () {
-			$(this).parent().remove();
-		})
-
+		overlay.append(removeButton).append(shareButton);
+		
 		$(this).append(overlay)
 	});
 	
@@ -185,7 +245,7 @@ $(function () {
 		
 		var offset = cont.offset()
 
-			$("body").css("overflow", "hidden");
+		$("body").css({"overflow":"hidden", "padding-right":"17px"});			
 
 		var box = cont.clone().addClass("box").css({
 				"top" : offset.height,
@@ -200,7 +260,7 @@ $(function () {
 		box.click(function () {
 			box.fadeOut(200, function () {
 				$(this).remove();
-				$("body").css("overflow", "auto");
+				$("body").css({"overflow":"auto", "padding-right":"0px"});
 			});
 		});
 	});

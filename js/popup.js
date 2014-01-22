@@ -3,12 +3,17 @@ $(function () {
 		chrome.runtime.getBackgroundPage(function( bg ) {
 			console.log("Starting highlight")
 			bg.startHighlight();
+			window.close();
 		});
 		
 	});
 	
 	$("#show-gallery").click(function() {
 		chrome.tabs.create({"url":"gallery.htm"});
+	});
+	
+	$("#share-an-image").click(function() {
+		alert(checkAuth());
 	});
 });
 
